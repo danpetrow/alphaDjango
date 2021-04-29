@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for stock in object_list %}
+        <div>
+            <h2><a href="{% url 'stock' stock.pk %}">{{ stock.symbol }}</a></h2>
+        </div>
+    {% endfor %}
+{% endblock content %}
