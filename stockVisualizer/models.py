@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Stock(models.Model):
@@ -6,3 +7,6 @@ class Stock(models.Model):
 
     def __str__(self):
         return self.symbol
+
+    def get_absolute_url(self):
+        return reverse('stock', args=[str(self.id)])

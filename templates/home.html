@@ -2,8 +2,11 @@
 
 {% block content %}
     {% for stock in object_list %}
-        <div>
-            <h2><a href="{% url 'stock' stock.pk %}">{{ stock.symbol }}</a></h2>
-        </div>
+        {% if stock.pk == 1 %}
+            <div>
+                <h2><a href="{% url 'stock_edit' stock.pk %}">Search Stock Data</a></h2>
+            </div>
+            
+        {% endif %}
     {% endfor %}
 {% endblock content %}

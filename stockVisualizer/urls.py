@@ -15,11 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
 from . import views
+#from .views import get_data, get_sma_data
 
 urlpatterns = [
     path('', views.StockListView.as_view()),
+    path('api/create/', views.StockCreateView.as_view(), name='stock_create'),
     path('api/ticker/<int:pk>', views.StockView.as_view(), name = "stock"),
+    path('api/ticker/<int:pk>/edit/', views.StockUpdateView.as_view(), name='stock_edit'),
     path('admin/', admin.site.urls),
+    url(r'^api/data/$', views.get_data, name ='data'),
+    url(r'^api/data/sma$', views.get_sma_data, name ='data'),
+    path('test', views.test)
 ]
-#create a view for '', create a template with a form for ''

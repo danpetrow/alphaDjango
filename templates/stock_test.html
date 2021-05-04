@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+
+<script>
+
+var endpoint = '/api/data/'
+
+$.ajax({
+    method: "GET",
+    url: endpoint,
+    success: function(data){
+        console.log(data)
+    },
+    error: function(error_data){
+        console.log('error')
+        console.log(error_data)
+    }
+})
+
+</script>
+
+
+{% block content %}
+
+        <div>
+            <h2><a href="">a static page</a></h2>
+            <content>This is a static page rn</content>
+        </div>

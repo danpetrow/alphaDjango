@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for symbol in stock  %}
+    {% empty %}
+        <h1>Search</h1>
+        <form action = {% url 'stock_create' %} method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update" />
+        </form>
+    {% endfor  %}
+
+    {% for symbol in stock %}
+        {% if symbol.pk == 1 %}
+        <h1>Search</h1>
+        <form action = {% url 'stock_edit' symbol.pk %} method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update" />
+        </form>
+        <canvas id="myChart" width="400" height="400"></canvas>
+        {% endif %}
+    {% endfor %}
+
+    <script>
+        var dac = []
+        var labels = []        
+        var endpoint = 'http://127.0.0.1:8001/api/data/'
+        res = $(document).ready(function(){
+            $.ajax({
+                method: "GET",
+                url: endpoint,
+                success: function(data){
+                    console.log(data)
+                },
+                error: function(error_data){
+                console.log("error")}
+        });
+        });
+        
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '# of Votes',
+                    data: res,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        </script>
+{% endblock content %}
