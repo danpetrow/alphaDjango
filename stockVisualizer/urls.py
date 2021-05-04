@@ -13,19 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+from django.contrib import admin # this isn't even completly required but nice to have to look at the db *1
 from django.urls import path
 from django.conf.urls import url
 from . import views
-#from .views import get_data, get_sma_data
 
 urlpatterns = [
-    path('', views.StockListView.as_view()),
+    path('admin/', admin.site.urls), # *1
     path('api/create/', views.StockCreateView.as_view(), name='stock_create'),
-    path('api/ticker/<int:pk>', views.StockView.as_view(), name = "stock"),
+    path('api/ticker/<int:pk>', views.StockView.as_view(), name = "stock"), # this m
     path('api/ticker/<int:pk>/edit/', views.StockUpdateView.as_view(), name='stock_edit'),
-    path('admin/', admin.site.urls),
+    url(r'^api/ticker/<int:pk>/data/$', views.get_data, name ='data'), # this is an idea.
     url(r'^api/data/$', views.get_data, name ='data'),
-    url(r'^api/data/sma$', views.get_sma_data, name ='data'),
-    path('test', views.test)
+    url(r'^api/data/sma$', views.get_sma_data, name ='sma_data'),
+    path('', views.test, name='test')
 ]

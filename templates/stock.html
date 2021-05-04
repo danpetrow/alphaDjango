@@ -13,11 +13,12 @@
 <script>
 var dac = []
 var labels = []        
-var endpoint = 'http://127.0.0.1:8001/api/data/'
+var endpoint = 'http://127.0.0.1:8000/api/data/'
 res = $(document).ready(function(){
     $.ajax({
         method: "GET",
         url: endpoint,
+        crossDomain: true,
         success: function(data){
             console.log(data)
         },

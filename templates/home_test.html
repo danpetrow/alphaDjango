@@ -14,7 +14,7 @@
     {% for symbol in stock %}
         {% if symbol.pk == 1 %}
         <h1>Search</h1>
-        <form action = {% url 'stock_edit' symbol.pk %} method="post">{% csrf_token %}
+        <form action = {% url 'stock_edit' symbol.pk %} method="post" id="myForm">{% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Update" />
         </form>
@@ -23,13 +23,14 @@
     {% endfor %}
 
     <script>
-        var dac = []
-        var labels = []        
-        var endpoint = 'http://127.0.0.1:8001/api/data/'
+        var ticker = "{{ ticker }}"
+        var endpoint = 'http://localhost:8000/api/data/' //currently unneeded
+        var endpoint1 = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
         res = $(document).ready(function(){
             $.ajax({
                 method: "GET",
-                url: endpoint,
+                url: endpoint1,
+                crossDomain: true,
                 success: function(data){
                     console.log(data)
                 },
@@ -37,14 +38,31 @@
                 console.log("error")}
         });
         });
-        
+        var endpoint = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
+        res = $(document).ready(function(){
+            $.ajax({
+                method: "GET",
+                url: endpoint,
+                crossDomain: true,
+                success: function(data){
+                    console.log(data)
+                },
+                error: function(error_data){
+                console.log("error")}
+        });
+        });
+    </script>
+    
+    <script>    
+        var dac = []
+        var labels = []         
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: '# of Votes',
+                    label: 'sma',
                     data: res,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -74,4 +92,5 @@
             }
         });
         </script>
+        
 {% endblock content %}
