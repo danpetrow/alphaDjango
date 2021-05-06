@@ -23,74 +23,90 @@
     {% endfor %}
 
     <script>
-        var ticker = "{{ ticker }}"
-        var endpoint = 'http://localhost:8000/api/data/' //currently unneeded
+        var ticker = "{{ ticker }}" 
         var endpoint1 = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
-        res = $(document).ready(function(){
+        var dac = []
+        
+        res1 = $(document).ready(function(){
+            lo = []
             $.ajax({
                 method: "GET",
                 url: endpoint1,
                 crossDomain: true,
                 success: function(data){
-                    console.log(data)
+                    i=data['Technical Analysis: SMA']
+                    sma = []
+                    dates = []
+                    ting = function(){
+                       
+                        var ii = []
+                        for (let key in i) {
+                            dates.push(String(key))
+
+                            lo.push(i[key])
+                            
+                            ;}
+
+                        for (let key in lo) {
+                        sma.push(Number(lo[key]['SMA']))
+                        ;}
+                            //sma=sma
+                            ;}
+                    ting()        
+                    //console.log(i)
+                    //console.log(sma)
+                    //console.log(dates)
+
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                label: 'Simple Moving Average',
+                                data: sma,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                            
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+        });
                 },
                 error: function(error_data){
                 console.log("error")}
+
         });
         });
+
         var endpoint = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
+        
         res = $(document).ready(function(){
             $.ajax({
                 method: "GET",
                 url: endpoint,
                 crossDomain: true,
                 success: function(data){
-                    console.log(data)
+                    daily_close=data['Time Series (Daily)']
+                    adjusted_close=data['Time Series (Daily)']
+                    
                 },
                 error: function(error_data){
                 console.log("error")}
         });
         });
-    </script>
     
-    <script>    
-        var dac = []
-        var labels = []         
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'sma',
-                    data: res,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
         </script>
-        
 {% endblock content %}
