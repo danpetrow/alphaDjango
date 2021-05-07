@@ -13,100 +13,163 @@
 
     {% for symbol in stock %}
         {% if symbol.pk == 1 %}
+        <div >
+        <div style="display:inline-block">
         <h1>Search</h1>
-        <form action = {% url 'stock_edit' symbol.pk %} method="post" id="myForm">{% csrf_token %}
-        {{ form.as_p }}
+        </div>
+        <div style="display:inline-block">
+        <form action = {% url 'stock_edit' symbol.pk %} method="post" id="myForm" float='left'>{% csrf_token %}
+        {{ form }}
         <input type="submit" value="Update" />
         </form>
-        <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+        </div>
         {% endif %}
     {% endfor %}
+    <div>
+    <canvas id="myChart" height='400' width="400"></canvas>
+    </div>
 
     <script>
+        //variables
         var ticker = "{{ ticker }}" 
-        var endpoint1 = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
-        var dac = []
-        
+        var endpoint = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
+        var dates = []
+        var sma = []
+        var daily_adjusted_close = []
+        var daily_close = []
+        //document ready function
         res1 = $(document).ready(function(){
-            lo = []
-            $.ajax({
-                method: "GET",
-                url: endpoint1,
-                crossDomain: true,
-                success: function(data){
-                    i=data['Technical Analysis: SMA']
-                    sma = []
-                    dates = []
-                    ting = function(){
-                       
-                        var ii = []
-                        for (let key in i) {
-                            dates.push(String(key))
-
-                            lo.push(i[key])
-                            
-                            ;}
-
-                        for (let key in lo) {
-                        sma.push(Number(lo[key]['SMA']))
-                        ;}
-                            //sma=sma
-                            ;}
-                    ting()        
-                    //console.log(i)
-                    //console.log(sma)
-                    //console.log(dates)
-
-                    var ctx = document.getElementById('myChart').getContext('2d');
-                    var myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: dates,
-                            datasets: [{
-                                label: 'Simple Moving Average',
-                                data: sma,
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                            
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: false
-                                }
-                            }
-                        }
-        });
-                },
-                error: function(error_data){
-                console.log("error")}
-
-        });
-        });
-
-        var endpoint = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
-        
-        res = $(document).ready(function(){
+            //more variables
+            var lo = []
+            var dates = []
+            var sma = []
+            var daily_adjusted_close = []
+            var daily_close = []
+            //ajax call 1
             $.ajax({
                 method: "GET",
                 url: endpoint,
                 crossDomain: true,
                 success: function(data){
-                    daily_close=data['Time Series (Daily)']
-                    adjusted_close=data['Time Series (Daily)']
-                    
+                    i=data['Technical Analysis: SMA']
+                    ting = function(){
+                        var ii = []
+                        for (let key in i) {
+                            dates.push(String(key))
+                            lo.push(i[key])
+                            ;}
+                        for (let key in lo) {
+                        sma.push(Number(lo[key]['SMA']))
+                        ;}
+                    ;}
+                    ting()
                 },
                 error: function(error_data){
                 console.log("error")}
+            });
+            // reassign variable for second get
+            var endpoint1 = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
+            // second get
+            $.ajax({
+                method: "GET",
+                url: endpoint1,
+                crossDomain: true,
+                success: function(data){
+                    //make vars
+                    testing = []
+                    daily_close = []
+                    daily_adjusted_close = []
+                    var i = data['Time Series (Daily)']
+                    //console.log(i)
+                    // get daily close
+                    daily_close_parse = function(){
+                        for (let key in i) {
+                            daily_close.push(Number(i[key]['4. close']))
+                        ;}
+                    ;}
+                    daily_close_parse()
+                    daily_adjusted_close_parse = function(){
+                        for (let key in i) {
+                            daily_adjusted_close.push(Number(i[key]['5. adjusted close']))
+                        ;}
+                    }
+                    daily_adjusted_close_parse()
+
+                    //sanity check
+                    var testing = dates.length-daily_close.length
+                    console.log(testing)
+                    console.log(daily_close.slice(0,testing).length)
+                    //console.log(daily_close.slice(0,-5))
+                    //console.log(dates)
+                    //fixing the order of the data
+                    daily_adjusted_close.reverse().slice(60)
+                    daily_close.reverse().slice(60)
+                    dates.reverse().slice(60)
+                    sma.reverse().slice(60)
+                    //make a graph
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                    type: 'line',
+                        data: {
+                            labels: dates.slice(-60),
+                            datasets: [{
+                                label: 'Simple Moving Average',
+                                data: sma.slice(-60),
+                                backgroundColor: [
+                                    'rgba(99, 132, 255, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(99, 132, 255, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Daily Close',
+                                data: daily_close.slice(-60),
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Daily Adjusted Close',
+                                data: daily_adjusted_close.slice(-60),
+                                backgroundColor: [
+                                    'rgba(99, 255, 132, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(99, 255, 132, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                        ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    //beginAtZero: false
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                position: 'top',
+                                },
+                                title: {
+                                display: true,
+                                text: ticker
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(error_data){
+                console.log("error")}
+            });
         });
-        });
-    
         </script>
 {% endblock content %}
