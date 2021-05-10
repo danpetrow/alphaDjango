@@ -1,8 +1,8 @@
 # Build a Stock Data Visualizer Web App Using Alpha Vantage + Django
 
----
-
 In this tutorial we will build a simple web app to visualize stock data using Python (Django), Javascript, and the Alpha Vantage API. What we are going to visualize is Simple Moving Average, Daily Close, and Daily Adjusted Close for a given stock. 
+
+## Daily Close vs. Daily Adjusted Close
 
 If you are new to stocks you might be curious, what is the difference between Daily Close and Daily Adjusted Close? Daily Close is the last price that a stock was traded at for a particular day. Daily Adjusted Close is the last price that a stock was traded at for a particular day minus any corporate actions taken that would affect a stock price. That is to say that if a corporation pays dividends, splits their stock, issues rights, spins-off a new independent company ect. it is useful to discount the Daily Close price to account for this hidden value that was given to investors.
 
@@ -15,7 +15,7 @@ I've broken down our application into four main sections. In the Models section 
 ## Index
 
 - [Conventions](#Conventions)
-- [Getting Started](#(Getting Started))
+- [Getting Started](#Getting))
 - [Models](#Models)
 - [Views](#Views)
 - [Templates](#Templates)
@@ -50,6 +50,28 @@ Create a project directory and the skeleton for your project.
 
     > C:\Users\dppet\Desktop\ django-admin startproject alphaDjango 
 
+Let’s look at what startproject created:
+
+    alphaDjango/
+        manage.py
+        alphaDjango/
+            __init__.py
+            settings.py
+            urls.py
+            asgi.py
+            wsgi.py
+
+These files are:
+
+- The outer mysite/ root directory is a container for your project. Its name doesn’t matter to Django; you can rename it to anything you like.
+- manage.py: A command-line utility that lets you interact with this Django project in various ways.
+- The inner mysite/ directory is the actual Python package for your project. Its name is the Python package name you’ll need to use to import anything inside it (e.g. mysite.urls).
+- mysite/__init__.py: An empty file that tells Python that this directory should be considered a Python package.
+- mysite/settings.py: Settings/configuration for this Django project.
+- mysite/urls.py: The URL declarations for this Django project; a “table of contents” of your Django-powered site.
+- mysite/asgi.py: An entry-point for ASGI-compatible web servers to serve your project.
+- mysite/wsgi.py: An entry-point for WSGI-compatible web servers to serve your project.
+
 Then open up your project dir
 
     > C:\Users\dppet\Desktop\ cd alphaDjango
@@ -58,10 +80,21 @@ Create a new app
 
     > C:\Users\dppet\Desktop\alphaDjango python manage.py startapp stockVisualizer
 
+Now we have another batch of new files:
+
+    alphaDjango/stockVisualizer/
+    __init__.py
+    admin.py
+    apps.py
+    migrations/
+        __init__.py
+    models.py
+    tests.py
+    views.py
 ---
 ## Models
 Define the structure of your data
-
+    #C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\models.py
 	from django.db import models
 	from django.urls import reverse
 
@@ -69,7 +102,8 @@ Define the structure of your data
 
 	class Stock(models.Model):
     	symbol = models.CharField(max_length=12)
-	# If you are familar with SQL what we are doing here is creating a table called stock which has a column called symbol where we will store some data
+
+ If you are familar with SQL what we have done here is created a table called stock which has a column called symbol where we will store some data.
 	
     def __str__(self):
         return self.symbol
