@@ -10,12 +10,12 @@ This tutorial is meant for an audience with a basic understanding of coding but 
 
 ---
 
-I've broken down our application into four main sections. In the Models section we will be creating a sqllite backend database. While this project could be done without a backend a database is essential to any modern web application. In the Views section we tell our application what to do when it recieves http requests. In the Templates section we create our html, css, and javascript. The Misc section covers settings and other housekeeping items.
-
 ## Index
 
+I've broken down our application into four main sections. In the Models section we will be creating a sqllite backend database. While this project could be done without a backend a database is essential to any modern web application. In the Views section we tell our application what to do when it recieves http requests. In the Templates section we create our html, css, and javascript. The Misc section covers settings and other housekeeping items.
+
 - [Conventions](#Conventions)
-- [Getting Started](#Getting))
+- [Getting Started](#Getting)
 - [Models](#Models)
 - [Views](#Views)
 - [Templates](#Templates)
@@ -33,6 +33,8 @@ Blocks that start with a # followed by a path indicate that we are working with 
 
 	#C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\views.py
 
+When working with larger files we will start by looking at the end product file without comments, then there will be a heading, then we will break the code down line by line.
+
 ---
 ## Getting Started
 - [Get an Alpha Vantage API key](https://www.alphavantage.co/support/#api-key)
@@ -41,7 +43,7 @@ Blocks that start with a # followed by a path indicate that we are working with 
 `> pip install Django`
 - Install Requests
 `> pip install requests`
----
+
 Create a Windows Environment Variable for your apikey
 
 	> setx alphavantage yourapikeygoeshere
@@ -50,7 +52,7 @@ Create a project directory and the skeleton for your project.
 
     > C:\Users\dppet\Desktop\ django-admin startproject alphaDjango 
 
-Let’s look at what startproject created:
+Let’s look at the skeleton startproject created for us:
 
     alphaDjango/
         manage.py
@@ -64,7 +66,7 @@ Let’s look at what startproject created:
 These files are:
 
 - The outer mysite/ root directory is a container for your project. Its name doesn’t matter to Django; you can rename it to anything you like.
-- manage.py: A command-line utility that lets you interact with this Django project in various ways.
+- /manage.py: A command-line utility that lets you interact with this Django project in various ways such as running the webserver to view your project!
 - The inner mysite/ directory is the actual Python package for your project. Its name is the Python package name you’ll need to use to import anything inside it (e.g. mysite.urls).
 - mysite/__init__.py: An empty file that tells Python that this directory should be considered a Python package.
 - mysite/settings.py: Settings/configuration for this Django project.
@@ -72,7 +74,7 @@ These files are:
 - mysite/asgi.py: An entry-point for ASGI-compatible web servers to serve your project.
 - mysite/wsgi.py: An entry-point for WSGI-compatible web servers to serve your project.
 
-Then open up your project dir
+Next open up your inner project directory.
 
     > C:\Users\dppet\Desktop\ cd alphaDjango
 
@@ -91,33 +93,58 @@ Now we have another batch of new files:
     models.py
     tests.py
     views.py
+    urls.py # This will be made later. I've included this so you can see the overall file structure if you need.
+    forms.py # This will be made later.
+    templates/ # Created later on.
+
+- /admin.py: We won't be using /admin.py in our project but it is a build in tool to manage users and data from an graphical user interface
+- /apps.py: We'll use this to inform our Django project that we've create an app called stockVisualizer
+- /models.py:  We'll use this file to create the structure (tables and columns) of our database.
+- /tests.py: This is beyond the scope of what we are going to cover but if you need to write unit tests those go here.
+- /views.py: Our views file passes data between the frontend and the database. We will also define how to handle specific http requests here.
+- /urls.py: This file define what content to display when a user enters a url
+- /forms.py: Here we are going to create a form instance that we can render. It will be used to create an html form element which is used to submit data to the backend.
+- /templates/: Html files live here.
 ---
 ## Models
-Define the structure of your data
-    #C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\models.py
-	from django.db import models
-	from django.urls import reverse
+Define the structure of our database. This is our end product file without comments. Skip to the next heading for the deeper dive.
 
-	# Create your models here.
+    #C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\models.py\
+    from django.db import models
+    from django.urls import reverse
 
-	class Stock(models.Model):
-    	symbol = models.CharField(max_length=12)
+    class Stock(models.Model):
+        symbol = models.CharField(max_length=12)
 
- If you are familar with SQL what we have done here is created a table called stock which has a column called symbol where we will store some data.
-	
     def __str__(self):
         return self.symbol
-	# Create a method that returns a string of the data in our symbol column.
-	
+
     def get_absolute_url(self):
         return reverse('stock', args=[str(self.id)])
-	# This creates a unique url for us to access each item in our database. 
-	
-Instantiate your database
 
-    > C:\Users\dppet\Desktop\alphaDjango python manage.py migrate
-	# You should notice running this migrate command creates db.sqlite3 file in your base directory (C:\Users\dppet\Desktop\alphaDjango)
-	
+### Let's break this down
+
+    #C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\models.py\
+    from django.db import models
+    from django.urls import reverse
+
+Create your models here.
+
+    class Stock(models.Model):
+        symbol = models.CharField(max_length=12)
+
+If you're familar with SQL what we have done here is created a table called stock which has a column called symbol where we will store some data.
+
+    def __str__(self):
+        return self.symbol
+Create a method that returns a string of the data in our symbol column.
+
+    def get_absolute_url(self):
+        return reverse('stock', args=[str(self.id)])
+This creates a unique url for us to access each item in our database. 
+
+---
+
 Create a form from your database model.
 	
 	# C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\forms.py
@@ -125,19 +152,27 @@ Create a form from your database model.
 
 	class StockForm(forms.Form):
 		 symbol = forms.CharField(label\='Stock Ticker', max\_length\=12)
- 
+
+---
+
+Instantiate your database
+
+    > C:\Users\dppet\Desktop\alphaDjango python manage.py migrate
+
+You should notice running this migrate command creates db.sqlite3 file in your base directory (C:\Users\dppet\Desktop\alphaDjango)
+
 ---
 ## Views
 
 Your first view
 
+    # C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\views.py\
 	from django.shortcuts import render
 	from django.views.generic import UpdateView, CreateView, RedirectView
 	from .forms import StockForm
 	from .models import Stock
 	import requests
 	import os
-	# Create your views here.
 
 	def home(request):
 		try:
@@ -148,8 +183,7 @@ Your first view
 			apikey=os.getenv('alphavantage') # access our environmental variable with the os mdoule.
 			sma = requests.get(f'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol={str(data[0])}&apikey={apikey}').json()
 			prices = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol={str(data[0])}&apikey={apikey}').json()
-			# Use the requests package to get our data from the Alpha Vantage API.
-			# We want to try to access data in the database. However if it doens't exist our app still needs to work.
+
 		except:
 			stock = Stock.objects.all()
 			data= list(Stock.objects.all())
@@ -157,12 +191,10 @@ Your first view
 			apikey=os.getenv('alphavantage')
 			sma = ''
 			prices = ''
-		# if this is a POST request we need to process the form data
+
 		if request.method == 'POST':
-			# create a form instance and populate it with data from the request:
 			form = StockForm(request.POST)
 
-    # if a GET (or any other method) we'll create a blank form
     else:
         form = StockForm()
 
@@ -173,9 +205,81 @@ Your first view
                 'sma':sma,
                 'prices':prices,
 				'apikey':apikey,
-                # This dictionary is known as context in Django. It's useful to move data from the backend to your UI/frontend.
         })
-	# This function passes data from the frontend to the backend when a form is submitted. Also this passes data from our backend to our homepage when an http get request is made.
+
+	class StockView(RedirectView):
+		url="/"
+
+	class StockUpdateView(UpdateView):
+		model = Stock
+		fields = ['symbol']
+		template_name = 'stock_edit.html'
+
+	class StockCreateView(CreateView):
+		model = Stock
+		fields = ['symbol']
+		template_name = 'stock_edit.html'
+
+### Let's break this down
+
+    # C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\views.py\
+	from django.shortcuts import render
+	from django.views.generic import UpdateView, CreateView, RedirectView
+	from .forms import StockForm
+	from .models import Stock
+	import requests
+	import os
+
+Create your views here.
+
+	def home(request):
+		try:
+			stock = Stock.objects.all()
+			data= list(Stock.objects.all())
+			ticker = data[0]
+			ticker = str(ticker).upper()
+			apikey=os.getenv('alphavantage')
+            
+We use the os module to access our apikey which we have stored as an environmental variable /Views.py allows us to interact with the database. We are using a try statement in case our database is empty .Stock.objects.all() returns all of the entries in our model if they exist. 
+
+			sma = requests.get(f'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol={str(data[0])}&apikey={apikey}').json()
+			prices = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol={str(data[0])}&apikey={apikey}').json()
+
+We are going to use the requests package to get our data from the Alpha Vantage API.
+
+		except:
+			stock = Stock.objects.all()
+			data= list(Stock.objects.all())
+			ticker = ''
+			apikey=os.getenv('alphavantage')
+			sma = ''
+			prices = ''
+
+If this is a POST request we need to process the form data. POST is an http method that's used to add data to the backend.
+
+		if request.method == 'POST':
+
+Create a form instance and populate it with data from the request:
+
+			form = StockForm(request.POST)
+
+If a GET (or any other http method) we'll create a blank form
+
+    else:
+        form = StockForm()
+
+        return render(request, 'home.html',{
+                'stock':stock,
+                'ticker':ticker,
+                'form':form,
+                'sma':sma,
+                'prices':prices,
+				'apikey':apikey,
+        })
+        
+This dictionary is known as context in Django. It's useful to move data from the backend to your UI/frontend.
+
+This function passes data from the frontend to the backend when a form is submitted. Also this passes data from our backend to our homepage when an http get request is made.
 
 	class StockView(RedirectView):
 		url="/"
@@ -292,12 +396,7 @@ Homepage html, css, and Javascript.
         //document ready function
         
         res1 = $(document).ready(function(){
-            //more variables
-            //lo = []
-            //dates = []
-            //sma = []
-            //daily_adjusted_close = []
-            daily_close = []
+
             //ajax call 1
             $.ajax({
                 method: "GET",
@@ -316,23 +415,14 @@ Homepage html, css, and Javascript.
                         for (let key in lo) {
                         sma.push(Number(lo[key]['SMA']))
                         ;}
-                        //console.log(dates)
-                        //console.log(sma)
-                        //return{
-                        //    dates: dates,
-                        //    sma: sma,
-                        //}
+
                     ;}
-                    //console.log(ting.dates)
-                //var results = 
                 ting()
-                //console.log(results)
-                //return results
+
                 },
                 error: function(error_data){
                 console.log("error")}
             });
-            //console.log(success.results)
             // second get
             $.ajax({
                 method: "GET",
@@ -358,12 +448,6 @@ Homepage html, css, and Javascript.
                     }
                     daily_adjusted_close_parse()
 
-                    //sanity check
-                    //var testing = dates.length-daily_close.length
-                    //console.log(testing)
-                    //console.log(daily_close.slice(0,testing).length)
-                    //console.log(daily_close.slice(0,-5))
-                    //console.log(dates)
                     //fixing the order of the data
                     daily_adjusted_close.reverse().slice(60)
                     daily_close.reverse().slice(60)
@@ -473,6 +557,14 @@ Now we need to edit one part of our settings to make the app work.
     ] 
     #There will be other stuff in this file that you will not want to change but you need to add to the file.
 
+Tell Django that our app exists and that it uses our database. 
+
+    # C:\Users\dppet\Desktop\alphaDjango\stockVisualizer\apps.py
+    from django.apps import AppConfig
+
+    class StockvisualizerConfig(AppConfig):
+        default_auto_field = 'django.db.models.BigAutoField'
+        name = 'stockVisualizer'
 ---
 Congrats you've made a webapp with Python, Javascript, and Alphavantage! Run your application so we can take a look at your work.
 
