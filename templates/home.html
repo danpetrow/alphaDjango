@@ -26,26 +26,27 @@
         </div>
         {% endif %}
     {% endfor %}
-    <div style="height:80%; width:80%;">
+    <div style="height:90%; width:90%;">
     <canvas id="myChart"></canvas>
     </div>
 
     <script>
         //variables
-        var ticker = "{{ ticker }}" 
-        var endpoint = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
-        var dates = []
-        var sma = []
-        var daily_adjusted_close = []
-        var daily_close = []
+        var ticker = "{{ ticker }}"
+        var apikey = "{{ apikey }}"
+        //console.log(apikey)
+        var endpoint = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey='+apikey
+        var endpoint1 = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey='+apikey
+        let dates, sma, daily_adjusted_close, daily_close, lo = []
         //document ready function
+        
         res1 = $(document).ready(function(){
             //more variables
-            var lo = []
-            var dates = []
-            var sma = []
-            var daily_adjusted_close = []
-            var daily_close = []
+            //lo = []
+            //dates = []
+            //sma = []
+            //daily_adjusted_close = []
+            daily_close = []
             //ajax call 1
             $.ajax({
                 method: "GET",
@@ -55,6 +56,8 @@
                     i=data['Technical Analysis: SMA']
                     ting = function(){
                         var ii = []
+                        dates = []
+                        sma = []
                         for (let key in i) {
                             dates.push(String(key))
                             lo.push(i[key])
@@ -62,14 +65,23 @@
                         for (let key in lo) {
                         sma.push(Number(lo[key]['SMA']))
                         ;}
+                        //console.log(dates)
+                        //console.log(sma)
+                        //return{
+                        //    dates: dates,
+                        //    sma: sma,
+                        //}
                     ;}
-                    ting()
+                    //console.log(ting.dates)
+                //var results = 
+                ting()
+                //console.log(results)
+                //return results
                 },
                 error: function(error_data){
                 console.log("error")}
             });
-            // reassign variable for second get
-            var endpoint1 = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey=3B8UZ3CBWOU6P33F'
+            //console.log(success.results)
             // second get
             $.ajax({
                 method: "GET",
@@ -81,7 +93,6 @@
                     daily_close = []
                     daily_adjusted_close = []
                     var i = data['Time Series (Daily)']
-                    //console.log(i)
                     // get daily close
                     daily_close_parse = function(){
                         for (let key in i) {
@@ -97,9 +108,9 @@
                     daily_adjusted_close_parse()
 
                     //sanity check
-                    var testing = dates.length-daily_close.length
-                    console.log(testing)
-                    console.log(daily_close.slice(0,testing).length)
+                    //var testing = dates.length-daily_close.length
+                    //console.log(testing)
+                    //console.log(daily_close.slice(0,testing).length)
                     //console.log(daily_close.slice(0,-5))
                     //console.log(dates)
                     //fixing the order of the data
@@ -170,6 +181,7 @@
                 error: function(error_data){
                 console.log("error")}
             });
+
         });
         </script>
 {% endblock content %}
