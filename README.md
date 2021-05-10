@@ -15,11 +15,11 @@ I've broken down our application into four main sections. In the Models section 
 ## Index
 
 - [Conventions](#Conventions)
-- [Getting Started Installing Requirements](#Getting Started Installing Requirements)
-- [[#Models]]
-- [[#Views]]
-- [[#Templates]]
-- [[#Misc]]
+- [Getting Started](#(Getting Started))
+- [Models](#Models)
+- [Views](#Views)
+- [Templates](#Templates)
+- [Misc](#Misc)
 
 This demonstration was done using Windows but the process will be similar for Mac or linux. This is by no means a definitive guide to Django but it should be a great entry point for someone looking to quickly build their first app.
 
