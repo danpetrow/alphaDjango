@@ -1,5 +1,7 @@
 # Build a Stock Data Visualizer Web App Using Alpha Vantage + Django
+
 ---
+
 In this tutorial we will build a simple web app to visualize stock data using Python (Django), Javascript, and the Alpha Vantage API. What we are going to visualize is Simple Moving Average, Daily Close, and Daily Adjusted Close for a given stock. 
 
 If you are new to stocks you might be curious, what is the difference between Daily Close and Daily Adjusted Close? Daily Close is the last price that a stock was traded at for a particular day. Daily Adjusted Close is the last price that a stock was traded at for a particular day minus any corporate actions taken that would affect a stock price. That is to say that if a corporation pays dividends, splits their stock, issues rights, spins-off a new independent company ect. it is useful to discount the Daily Close price to account for this hidden value that was given to investors.
@@ -11,8 +13,9 @@ This tutorial is meant for an audience with a basic understanding of coding but 
 I've broken down our application into four main sections. In the Models section we will be creating a sqllite backend database. While this project could be done without a backend a database is essential to any modern web application. In the Views section we tell our application what to do when it recieves http requests. In the Templates section we create our html, css, and javascript. The Misc section covers settings and other housekeeping items.
 
 ## Index
--[[#Conventions]]
--[[#Getting Started Installing Requirements]]
+
+- [Conventions](#Conventions)
+- [Getting Started Installing Requirements](#Getting Started Installing Requirements)
 - [[#Models]]
 - [[#Views]]
 - [[#Templates]]
@@ -22,7 +25,7 @@ This demonstration was done using Windows but the process will be similar for Ma
 
 ---
 ## Conventions
-A block that starts with a > indicates a command that should be run in your terminal or command prompt.
+A block that starts with a > indicates a command that should be run in your terminal or command prompt. Make sure you're running the terminal as Administrator.
 
 	> pip install Django
 	
