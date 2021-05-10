@@ -21,7 +21,7 @@ I've broken down our application into four main sections. In the Models section 
 - [Templates](#Templates)
 - [Misc](#Misc)
 
-This demonstration was done using Windows but the process will be similar for Mac or linux. This is by no means a definitive guide to Django but it should be a great entry point for someone looking to quickly build their first app.
+This demonstration was done using Windows but the process will be similar for Mac or Linux.
 
 ---
 ## Conventions
@@ -47,6 +47,18 @@ When working with larger files we will start by looking at the end product file 
 Create a Windows Environment Variable for your apikey
 
 	> setx alphavantage yourapikeygoeshere
+
+Here is the Linux command if you aren't running Windows.
+
+    > export alphavantage yourapikeygoeshere
+
+## Quickstart
+
+If you want to get right to the satisfying visualization and work you way backwards here is how you can do that. If you want to follow the code line by line skip this section.
+
+    > C:\Users\dppet\Desktop\ git clone https://github.com/danpetrow/alphaDjango.git
+
+    > C:\Users\dppet\Desktop\ python manage.py runserver
 
 Create a project directory and the skeleton for your project.
 
@@ -162,6 +174,7 @@ Instantiate your database
 You should notice running this migrate command creates db.sqlite3 file in your base directory (C:\Users\dppet\Desktop\alphaDjango)
 
 ---
+
 ## Views
 
 Your first view
@@ -180,7 +193,7 @@ Your first view
 			data= list(Stock.objects.all())
 			ticker = data[0]
 			ticker = str(ticker).upper()
-			apikey=os.getenv('alphavantage') # access our environmental variable with the os mdoule.
+			apikey=os.getenv('alphavantage')
 			sma = requests.get(f'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol={str(data[0])}&apikey={apikey}').json()
 			prices = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol={str(data[0])}&apikey={apikey}').json()
 
@@ -276,26 +289,31 @@ If a GET (or any other http method) we'll create a blank form
                 'prices':prices,
 				'apikey':apikey,
         })
-        
+
 This dictionary is known as context in Django. It's useful to move data from the backend to your UI/frontend.
 
 This function passes data from the frontend to the backend when a form is submitted. Also this passes data from our backend to our homepage when an http get request is made.
 
 	class StockView(RedirectView):
 		url="/"
-		# When we post data to our database this class redirects us back to our homepage
+
+When we post data to our database this class redirects us back to our homepage
 
 	class StockUpdateView(UpdateView):
 		model = Stock
 		fields = ['symbol']
 		template_name = 'stock_edit.html'
-		# We will use this class to update our database Stock.symbol[0]
+
+We will use this class to update our database Stock.symbol[0]
 
 	class StockCreateView(CreateView):
 		model = Stock
 		fields = ['symbol']
 		template_name = 'stock_edit.html'
-		# When nothing exists this class creates Stock.symbol[0]
+
+When nothing exists this class creates Stock.symbol[0]
+
+---
 
 Your first URL
     
@@ -311,7 +329,9 @@ Your first URL
 		path('api/ticker/<int:pk>/edit/', views.StockUpdateView.as_view(), name = 'stock_edit'),
 		path('', views.home, name = 'home')
 	]
-	
+
+Creating a new path for our web app is simple. Just use Path('your-new-url/, The view we want to render defined in .views.py , ['optional:name'])
+
 Your project's URLs
     
     #C:\Users\dppet\Desktop\alphaDjango\urls.py
@@ -320,8 +340,13 @@ Your project's URLs
     urlpatterns = [
         path('', include('stockVisualizer.urls')),
     ]
+
+Rather than using our base urls we include the urls defined in stockVisualizer.urls.
+
 ---
+
 ## Templates
+
 Django uses a a technology called Jinja which allows you to write reusable html components. If you're familiar with html but see something like {% block content %} or {{ stock }} just know this is Jinja.
 
 Now let's make some html.
@@ -349,8 +374,206 @@ An html base
 		</div>
 	</body>
 	</html>
-    
+
+### Breakdown
+
+	# C:\Users\dppet\Desktop\alphaDjango\templates\base.html
+	<!DOCTYPE html>
+	<html lang="en" style="height: 100%; overflow:hidden;">
+	<head>
+		<!--<link rel="stylesheet" href="style.css">-->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+These two script tags reference CDNs (Content Delivery Network) which enable us to use chart.js and jQuery in our project without downloading those packages. 
+
+        <title>{% block title %}AlphaDjango{% endblock %}</title>
+	</head>
+
+	<body style='height: 100%;'>
+		<nav><a href="/">Home</a></nav>
+		<div id="content">      
+			{% block content %}{% endblock %}
+		</div>
+	</body>
+	</html>
+
+Base.html is a Jinja component which we will now be able to use in all of our html files so we can cut down on repetition.
+
+---
+
 Homepage html, css, and Javascript.
+
+	# C:\Users\dppet\Desktop\alphaDjango\templates\home.html
+	{% extends 'base.html' %}
+
+	{% block content %}
+
+    {% for symbol in stock  %}
+    {% empty %}
+        <h1>Search</h1>
+        <form action = {% url 'stock_create' %} method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update" />
+        </form>
+    {% endfor  %}
+
+    {% for symbol in stock %}
+        {% if symbol.pk == 1 %}
+        <div style='height:10%;'>
+        <div style="display:inline-block">
+        <h1>Search</h1>
+        </div>
+        <div style="display:inline-block">
+        <form action = {% url 'stock_edit' symbol.pk %} method="post" id="myForm" float='left'>{% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Update" />
+        </form>
+        </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+    <div style="height:90%; width:90%;">
+    <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        //variables
+        var ticker = "{{ ticker }}"
+        var apikey = "{{ apikey }}"
+        //console.log(apikey)
+        var endpoint = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey='+apikey
+        var endpoint1 = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey='+apikey
+        let dates, sma, daily_adjusted_close, daily_close, lo = []
+        //document ready function
+        
+        res1 = $(document).ready(function(){
+
+            //ajax call 1
+            $.ajax({
+                method: "GET",
+                url: endpoint,
+                crossDomain: true,
+                success: function(data){
+                    i=data['Technical Analysis: SMA']
+                    ting = function(){
+                        var ii = []
+                        dates = []
+                        sma = []
+                        for (let key in i) {
+                            dates.push(String(key))
+                            lo.push(i[key])
+                            ;}
+                        for (let key in lo) {
+                        sma.push(Number(lo[key]['SMA']))
+                        ;}
+
+                    ;}
+                ting()
+
+                },
+                error: function(error_data){
+                console.log("error")}
+            });
+            // second get
+            $.ajax({
+                method: "GET",
+                url: endpoint1,
+                crossDomain: true,
+                success: function(data){
+                    //make vars
+                    testing = []
+                    daily_close = []
+                    daily_adjusted_close = []
+                    var i = data['Time Series (Daily)']
+                    // get daily close
+                    daily_close_parse = function(){
+                        for (let key in i) {
+                            daily_close.push(Number(i[key]['4. close']))
+                        ;}
+                    ;}
+                    daily_close_parse()
+                    daily_adjusted_close_parse = function(){
+                        for (let key in i) {
+                            daily_adjusted_close.push(Number(i[key]['5. adjusted close']))
+                        ;}
+                    }
+                    daily_adjusted_close_parse()
+
+                    //fixing the order of the data
+                    daily_adjusted_close.reverse().slice(60)
+                    daily_close.reverse().slice(60)
+                    dates.reverse().slice(60)
+                    sma.reverse().slice(60)
+                    //make a graph
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                    type: 'line',
+                        data: {
+                            labels: dates.slice(-60),
+                            datasets: [{
+                                label: 'Simple Moving Average',
+                                data: sma.slice(-60),
+                                backgroundColor: [
+                                    'rgba(99, 132, 255, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(99, 132, 255, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Daily Close',
+                                data: daily_close.slice(-60),
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Daily Adjusted Close',
+                                data: daily_adjusted_close.slice(-60),
+                                backgroundColor: [
+                                    'rgba(99, 255, 132, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(99, 255, 132, 1)',
+                                ],
+                                borderWidth: 1
+                            },
+                        ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    //beginAtZero: false
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                position: 'top',
+                                },
+                                title: {
+                                display: true,
+                                text: ticker
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(error_data){
+                console.log("error")}
+            });
+
+        });
+        </script>
+	{% endblock content %}
+
+### Breakdown
 
 	# C:\Users\dppet\Desktop\alphaDjango\templates\home.html
 	{% extends 'base.html' %}
