@@ -572,6 +572,8 @@ Homepage html, css, and Javascript.
         </form>
     {% endfor  %}
 
+Here we use {% empty %} which is a useful Jinja snippet. This snippet is a sort of flow control. You can read this like if there are no symbols in stock do the following. 
+
     {% for symbol in stock %}
         {% if symbol.pk == 1 %}
         <div style='height:10%;'>
@@ -587,20 +589,25 @@ Homepage html, css, and Javascript.
         </div>
         {% endif %}
     {% endfor %}
+
+If we do have some data in stock then for the first symbol we want a form that will edit that. You should notice the differences in these two forms. The first form refers to our create-stock url which relates to our CreateView view. This form calls our stock_edit url, which uses our StockUpdateView class.
+
     <div style="height:90%; width:90%;">
     <canvas id="myChart"></canvas>
     </div>
+
+This creates a canvas that we will edit with ChartJS in the script section.
 
     <script>
         //variables
         var ticker = "{{ ticker }}"
         var apikey = "{{ apikey }}"
-        //console.log(apikey)
         var endpoint = 'https://www.alphavantage.co/query?function=SMA&interval=daily&time_period=10&series_type=close&symbol='+ticker+'&apikey='+apikey
         var endpoint1 = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&outputsize=full&symbol='+ticker+'&apikey='+apikey
         let dates, sma, daily_adjusted_close, daily_close, lo = []
-        //document ready function
-        
+
+Here we use our Context to create a variable which is an extremely useful and intuitive function of the render method from our Home view.
+
         res1 = $(document).ready(function(){
 
             //ajax call 1
@@ -629,6 +636,9 @@ Homepage html, css, and Javascript.
                 error: function(error_data){
                 console.log("error")}
             });
+
+Here we create a jquery document ready function. This prevents our javascript from running until all of our html is loaded. Then we make an AJAX call with Jquery and parse through the returned JSON object to get a list of dates and a list of Simple Moving Averages.  
+
             // second get
             $.ajax({
                 method: "GET",
@@ -659,6 +669,9 @@ Homepage html, css, and Javascript.
                     daily_close.reverse().slice(60)
                     dates.reverse().slice(60)
                     sma.reverse().slice(60)
+
+The data that our AJAX calls return is ordered from present to past. We need to reverse this so our graphs look nice and then we slice the list so we only get two months of data.
+
                     //make a graph
                     var ctx = document.getElementById('myChart').getContext('2d');
                     var myChart = new Chart(ctx, {
@@ -719,12 +732,18 @@ Homepage html, css, and Javascript.
                         }
                     });
                 },
+
+Making our graph is nested inside of our second AJAX call in a success function. This is a hacky method that seems to work like asynchronous Javascript. All this means is instead of all the Javascript executing at the same time, making the graph happens after we've got all of the data from our AJAX requests.
+
                 error: function(error_data){
                 console.log("error")}
             });
 
         });
         </script>
+
+This Javascript is very naive. It works, but ideally this would be actually be asyncronous Javascript. If you have a better way to accomplish this please make a pull request.
+
 	{% endblock content %}
 	
 Html for editing our database
@@ -761,7 +780,8 @@ Now we need to edit one part of our settings to make the app work.
         },
 		...
     ] 
-    #There will be other stuff in this file that you will not want to change but you need to add to the file.
+
+There will be plenty of other stuff in this file that you will not want to change. Make sure you just add these few changes. If you want to take a look at the whole file check it out via Github.
 
 Tell Django that our app exists and that it uses our database. 
 
