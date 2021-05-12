@@ -2,7 +2,7 @@
 
 In this tutorial we will build a simple web app to visualize stock data using Python (Django), Javascript, and the Alpha Vantage API. What we are going to visualize is Simple Moving Average, Daily Close, and Daily Adjusted Close for a given stock. 
 
-![[alphaDjango.png]]
+[alphaDjango.png](/blob/main/alphaDjango.png)
 
 ## Daily Close vs. Daily Adjusted Close
 
@@ -77,17 +77,6 @@ Let’s look at the skeleton startproject created for us:
             asgi.py
             wsgi.py
 
-These files are:
-
-- The outer mysite/ root directory is a container for your project. Its name doesn’t matter to Django; you can rename it to anything you like.
-- /manage.py: A command-line utility that lets you interact with this Django project in various ways such as running the webserver to view your project!
-- The inner mysite/ directory is the actual Python package for your project. Its name is the Python package name you’ll need to use to import anything inside it (e.g. mysite.urls).
-- mysite/__init__.py: An empty file that tells Python that this directory should be considered a Python package.
-- mysite/settings.py: Settings/configuration for this Django project.
-- mysite/urls.py: The URL declarations for this Django project; a “table of contents” of your Django-powered site.
-- mysite/asgi.py: An entry-point for ASGI-compatible web servers to serve your project.
-- mysite/wsgi.py: An entry-point for WSGI-compatible web servers to serve your project.
-
 Next open up your inner project directory.
 
     > C:\Users\dppet\Desktop\ cd alphaDjango
@@ -111,14 +100,6 @@ Now we have another batch of new files:
     forms.py # This will be made later.
     templates/ # Created later on.
 
-- /admin.py: We won't be using /admin.py in our project but it is a build in tool to manage users and data from an graphical user interface
-- /apps.py: We'll use this to inform our Django project that we've create an app called stockVisualizer
-- /models.py:  We'll use this file to create the structure (tables and columns) of our database.
-- /tests.py: This is beyond the scope of what we are going to cover but if you need to write unit tests those go here.
-- /views.py: Our views file passes data between the frontend and the database. We will also define how to handle specific http requests here.
-- /urls.py: This file define what content to display when a user enters a url
-- /forms.py: Here we are going to create a form instance that we can render. It will be used to create an html form element which is used to submit data to the backend.
-- /templates/: Html files live here.
 ---
 ## Models
 Define the structure of our database. This is our end product file without comments. Skip to the next heading for the deeper dive.
