@@ -2,6 +2,8 @@
 
 In this tutorial we will build a simple web app to visualize stock data using Python (Django), Javascript, and the Alpha Vantage API. What we are going to visualize is Simple Moving Average, Daily Close, and Daily Adjusted Close for a given stock. 
 
+![[alphaDjango.png]]
+
 ## Daily Close vs. Daily Adjusted Close
 
 If you are new to stocks you might be curious, what is the difference between Daily Close and Daily Adjusted Close? Daily Close is the last price that a stock was traded at for a particular day. Daily Adjusted Close is the last price that a stock was traded at for a particular day minus any corporate actions taken that would affect a stock price. That is to say that if a corporation pays dividends, splits their stock, issues rights, spins-off a new independent company ect. it is useful to discount the Daily Close price to account for this hidden value that was given to investors.
