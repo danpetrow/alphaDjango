@@ -56,7 +56,7 @@ Here is the Linux command if you aren't running Windows.
 
 ## Quickstart
 
-If you want to get right to the satisfying visualization and work you way backwards here is how you can do that. If you want to follow the code line by line skip this section.
+If you want to get right to the satisfying visualization and work you way backwards through the code/tutorial here is how you can do that. If you want to follow the code line by line skip this section.
 
     > C:\Users\dppet\Desktop\ git clone https://github.com/danpetrow/alphaDjango.git
 
